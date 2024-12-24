@@ -227,10 +227,13 @@ int CTrackViewSequence::RecordTrackChangesForNode(CTrackViewAnimNode* componentN
 
     if (componentNode)
     {
-        retNumKeysSet = componentNode->SetKeysForChangedTrackValues(GetIEditor()->GetAnimation()->GetTime());
+        const CAnimationContext* animationContext = GetIEditor()->GetAnimation();
+        retNumKeysSet = componentNode->SetKeysForChangedTrackValues(animationContext->GetTime());
         if (retNumKeysSet)
         {
-            OnKeysChanged();    // change notification for updating TrackView UI
+            AzToolsFramework::ScopedUndoBatch undoBatch("Change Keys On Record");
+            OnKeysChanged(); // change notification for updating TrackView UI
+            undoBatch.MarkEntityDirty(animationContext->GetSequence()->GetSequenceComponentEntityId());
         }
     }
 
@@ -1135,7 +1138,7 @@ void CTrackViewSequence::AdjustKeysToTimeRange(Range newTimeRange)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CTrackViewSequence::SetTimeRange(Range timeRange)
+void CTrackViewSequence::SetTimeRange(const Range& timeRange)
 {
     m_pAnimSequence->SetTimeRange(timeRange);
     OnSequenceSettingsChanged();

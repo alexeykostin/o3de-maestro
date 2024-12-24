@@ -5,10 +5,6 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-
-
-#ifndef CRYINCLUDE_EDITOR_TRACKVIEW_TRACKVIEWSEQUENCE_H
-#define CRYINCLUDE_EDITOR_TRACKVIEW_TRACKVIEWSEQUENCE_H
 #pragma once
 
 #include <IEditor.h>
@@ -112,7 +108,7 @@ public:
     bool IsBoundToEditorObjects() const override;
 
     // Time range
-    void SetTimeRange(Range timeRange);
+    void SetTimeRange(const Range& timeRange);
     Range GetTimeRange() const;
 
     // Current time in sequence. Note that this can be different from the time
@@ -403,4 +399,3 @@ private:
     // the same camera.
     bool m_bNoNotificationsPreviously;
 };
-#endif // CRYINCLUDE_EDITOR_TRACKVIEW_TRACKVIEWSEQUENCE_H

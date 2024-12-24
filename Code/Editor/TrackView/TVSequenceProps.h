@@ -6,11 +6,7 @@
  *
  */
 
-
-#ifndef CRYINCLUDE_EDITOR_TRACKVIEW_TVSEQUENCEPROPS_H
-#define CRYINCLUDE_EDITOR_TRACKVIEW_TVSEQUENCEPROPS_H
 #pragma once
-
 
 class CTrackViewSequence;
 
@@ -42,7 +38,9 @@ private:
     virtual bool OnInitDialog();
     virtual void OnOK();
 
-    void MoveScaleKeys();
+    bool AreSequencePropsChanged(const QString& name);
+    bool UpdateSequenceProps(const QString& name, bool dryRun = false);
+
     float m_FPS;
     int m_outOfRange;
     SequenceTimeUnit m_timeUnit;
@@ -55,7 +53,4 @@ public slots:
 
 private slots:
     void ToggleCutsceneOptions(bool);
-    void UpdateSequenceProps(const QString& name);
 };
-
-#endif // CRYINCLUDE_EDITOR_TRACKVIEW_TVSEQUENCEPROPS_H

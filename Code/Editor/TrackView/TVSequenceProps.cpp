@@ -110,53 +110,63 @@ bool CTVSequenceProps::OnInitDialog()
     // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CTVSequenceProps::MoveScaleKeys()
+bool CTVSequenceProps::AreSequencePropsChanged(const QString& name)
 {
-    // Move/Rescale the sequence to a new time range.
-    Range timeRangeOld = m_pSequence->GetTimeRange();
-    Range timeRangeNew;
-    timeRangeNew.start = static_cast<float>(ui->START_TIME->value());
-    timeRangeNew.end = static_cast<float>(ui->END_TIME->value());
-
-    if (!(timeRangeNew == timeRangeOld))
-    {
-        m_pSequence->AdjustKeysToTimeRange(timeRangeNew);
-    }
+    return UpdateSequenceProps(name, true);
 }
 
-void CTVSequenceProps::UpdateSequenceProps(const QString& name)
+bool CTVSequenceProps::UpdateSequenceProps([[maybe_unused]]const QString& name, bool dryRun)
 {
+    bool dirty = false;
+    const Range timeRangeOld = m_pSequence->GetTimeRange();
+    Range timeRangeNew(static_cast<float>(ui->START_TIME->value()), static_cast<float>(ui->END_TIME->value()));
+
     if (ui->MOVE_SCALE_KEYS->isChecked())
     {
-        MoveScaleKeys();
+        // Move/Rescale the sequence to a new time range.
+        if (!(timeRangeNew == timeRangeOld))
+        {
+            dirty = true;
+            if (!dryRun)
+            {
+                m_pSequence->AdjustKeysToTimeRange(timeRangeNew);
+            }
+        }
     }
-
-    Range timeRange;
-    timeRange.start = static_cast<float>(ui->START_TIME->value());
-    timeRange.end = static_cast<float>(ui->END_TIME->value());
 
     if (m_timeUnit == Frames)
     {
-        float invFPS = 1.0f / m_FPS;
-        timeRange.start = static_cast<float>(ui->START_TIME->value()) * invFPS;
-        timeRange.end = static_cast<float>(ui->END_TIME->value()) * invFPS;
+        const float invFPS = 1.0f / m_FPS;
+        timeRangeNew.start *= invFPS;
+        timeRangeNew.end *= invFPS;
     }
 
-    m_pSequence->SetTimeRange(timeRange);
-
-    CAnimationContext* ac = GetIEditor()->GetAnimation();
-    if (ac)
+    if (!(timeRangeNew == timeRangeOld))
     {
-        ac->UpdateTimeRange();
+        dirty = true;
+        if (!dryRun)
+        {
+            m_pSequence->SetTimeRange(timeRangeNew);
+
+            CAnimationContext* ac = GetIEditor()->GetAnimation();
+            if (ac)
+            {
+                ac->UpdateTimeRange();
+            }
+        }
     }
 
-    QString seqName = QString::fromUtf8(m_pSequence->GetName().c_str());
+    const QString seqName = QString::fromUtf8(m_pSequence->GetName().c_str());
     if (name != seqName)
     {
-        // Rename sequence.
-        const CTrackViewSequenceManager* sequenceManager = GetIEditor()->GetSequenceManager();
+        dirty = true;
+        if (!dryRun)
+        {
+            // Rename sequence.
+            const CTrackViewSequenceManager* sequenceManager = GetIEditor()->GetSequenceManager();
 
-        sequenceManager->RenameNode(m_pSequence, name.toUtf8().data());
+            sequenceManager->RenameNode(m_pSequence, name.toUtf8().data());
+        }
     }
 
     int seqFlags = m_pSequence->GetFlags();
@@ -245,10 +255,13 @@ void CTVSequenceProps::UpdateSequenceProps(const QString& name)
 
     if (static_cast<IAnimSequence::EAnimSequenceFlags>(seqFlags) != m_pSequence->GetFlags())
     {
-        AzToolsFramework::ScopedUndoBatch undoBatch("Change TrackView Sequence Flags");
-        m_pSequence->SetFlags(static_cast<IAnimSequence::EAnimSequenceFlags>(seqFlags));
-        undoBatch.MarkEntityDirty(m_pSequence->GetSequenceComponentEntityId());
+        dirty = true;
+        if (!dryRun)
+        {
+            m_pSequence->SetFlags(static_cast<IAnimSequence::EAnimSequenceFlags>(seqFlags));
+        }
     }
+    return dirty;
 }
 
 void CTVSequenceProps::OnOK()
@@ -267,9 +280,12 @@ void CTVSequenceProps::OnOK()
 
     if (m_pSequence != nullptr)
     {
-        AzToolsFramework::ScopedUndoBatch undoBatch("Change TrackView Sequence Settings");
-        UpdateSequenceProps(name);
-        undoBatch.MarkEntityDirty(m_pSequence->GetSequenceComponentEntityId());
+        if (AreSequencePropsChanged(name))
+        {
+            AzToolsFramework::ScopedUndoBatch undoBatch("Change TrackView Sequence Settings");
+            UpdateSequenceProps(name);
+            undoBatch.MarkEntityDirty(m_pSequence->GetSequenceComponentEntityId());
+        }
     }
 
     accept();

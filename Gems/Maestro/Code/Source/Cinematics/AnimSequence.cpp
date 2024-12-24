@@ -1007,7 +1007,7 @@ void CAnimSequence::InitPostLoad()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CAnimSequence::SetTimeRange(Range timeRange)
+void CAnimSequence::SetTimeRange(const Range& timeRange)
 {
     m_timeRange = timeRange;
     // Set this time range for every track in animation.

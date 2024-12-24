@@ -643,7 +643,7 @@ void CAnimNode::SerializeAnims(XmlNodeRef& xmlNode, bool bLoading, bool bLoadEmp
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CAnimNode::SetTimeRange(Range timeRange)
+void CAnimNode::SetTimeRange(const Range& timeRange)
 {
     for (unsigned int i = 0; i < m_tracks.size(); i++)
     {

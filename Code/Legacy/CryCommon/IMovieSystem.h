@@ -648,7 +648,7 @@ public:
     virtual void SetTrack(const CAnimParamType& paramType, IAnimTrack* track) = 0;
 
     // Set time range for all tracks in this sequence.
-    virtual void SetTimeRange(Range timeRange) = 0;
+    virtual void SetTimeRange(const Range& timeRange) = 0;
 
     // Remove track from anim node.
     virtual void AddTrack(IAnimTrack* pTrack) = 0;
@@ -934,10 +934,10 @@ struct IAnimSequence
     virtual void Animate(const SAnimContext& ec) = 0;
 
     //! Set time range of this sequence.
-    virtual void SetTimeRange(Range timeRange) = 0;
+    virtual void SetTimeRange(const Range& timeRange) = 0;
 
     //! Get time range of this sequence.
-    virtual Range GetTimeRange() = 0;
+    virtual Range GetTimeRange() const = 0;
 
     //! Resets the sequence
     virtual void Reset(bool bSeekToStart) = 0;

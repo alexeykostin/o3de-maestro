@@ -133,7 +133,7 @@ public:
     void SetTrack(const CAnimParamType& paramType, IAnimTrack* track) override;
     IAnimTrack* CreateTrack(const CAnimParamType& paramType) override;
     void InitializeTrackDefaultValue([[maybe_unused]] IAnimTrack* pTrack, [[maybe_unused]] const CAnimParamType& paramType) override {}
-    void SetTimeRange(Range timeRange) override;
+    void SetTimeRange(const Range& timeRange) override;
     void AddTrack(IAnimTrack* pTrack) override;
     bool RemoveTrack(IAnimTrack* pTrack) override;
     void CreateDefaultTracks() override {};

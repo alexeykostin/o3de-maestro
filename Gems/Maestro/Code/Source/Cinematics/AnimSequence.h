@@ -58,8 +58,8 @@ public:
     const IAnimSequence* GetParentSequence() const override;
     bool IsAncestorOf(const IAnimSequence* pSequence) const override;
 
-    void SetTimeRange(Range timeRange) override;
-    Range GetTimeRange() override { return m_timeRange; };
+    void SetTimeRange(const Range& timeRange) override;
+    Range GetTimeRange() const override { return m_timeRange; }
 
     void AdjustKeysToTimeRange(const Range& timeRange) override;
 
