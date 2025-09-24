@@ -145,7 +145,7 @@ namespace ParsingUtilitiesCpp
             m_result += "\n";
         }
 
-        void EvaluateRoot(ExecutionTreeConstPtr node, const Slot*)
+        void EvaluateRoot([[maybe_unused]] ExecutionTreeConstPtr node, const Slot*)
         {
             m_result += "\nRoot:\n";
         }
